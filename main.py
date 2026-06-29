@@ -1,5 +1,25 @@
 from fastapi import FastAPI
 import requests
+import sqlite3
+from pydantic import BaseModel
+
+def init_db():
+    conn = sqlite3.connect("books.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS books (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT,
+            author TEXT,
+            status TEXT DEFAULT 'want to read',
+            rating INTEGER,
+            notes TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+init_db()
 
 app = FastAPI()
 
@@ -39,3 +59,28 @@ def get_author_books(author_name: str):
         })
     
     return {"author": author_name, "books": books}
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+@app.post("/books")
+def add_book(book: Book):
+    conn = sqlite3.connect("books.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO books (title, author) VALUES (?, ?)",
+        (book.title, book.author)
+    )
+    conn.commit()
+    conn.close()
+    return {"message": f"'{book.title}' added to your reading list!"}
+
+@app.get("/books")
+def get_books():
+    conn = sqlite3.connect("books.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM books")
+    books = cursor.fetchall()
+    conn.close()
+    return {"books": books}
