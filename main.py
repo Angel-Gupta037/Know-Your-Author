@@ -68,13 +68,24 @@ class Book(BaseModel):
 def add_book(book: Book):
     conn = sqlite3.connect("books.db")
     cursor = conn.cursor()
+    
+    # check if this author already exists in reading list
+    cursor.execute("SELECT id FROM books WHERE author=?", (book.author,))
+    existing = cursor.fetchone()
+    
     cursor.execute(
         "INSERT INTO books (title, author) VALUES (?, ?)",
         (book.title, book.author)
     )
     conn.commit()
     conn.close()
-    return {"message": f"'{book.title}' added to your reading list!"}
+    
+    if not existing:
+        message = f"✨ You have entered {book.author}'s world! Welcome to the journey."
+    else:
+        message = f"📚 '{book.title}' added! Going deeper into {book.author}'s universe."
+    
+    return {"message": message}
 
 @app.get("/books")
 def get_books():
@@ -84,3 +95,32 @@ def get_books():
     books = cursor.fetchall()
     conn.close()
     return {"books": books}
+@app.put("/books/{book_id}")
+def update_book(book_id: int, status: str, rating: int = None, notes: str = None):
+    conn = sqlite3.connect("books.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE books SET status=?, rating=?, notes=? WHERE id=?",
+        (status, rating, notes, book_id)
+    )
+    conn.commit()
+    conn.close()
+
+    title = book[0] if book else "This book"
+    
+    if status == "reading":
+        message = f"📖 '{title}' and you are now on an adventure together!"
+    elif status == "finished":
+        message = f"🎉 '{title}' has been conquered! How did it feel?"
+    else:
+        message = f"🔖 '{title}' is patiently waiting for you..."
+
+@app.delete("/books/{book_id}")
+def delete_book(book_id: int):
+    conn = sqlite3.connect("books.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM books WHERE id=?", (book_id,))
+    conn.commit()
+    conn.close()
+    title = book[0] if book else "That book"
+    return {"message": f"💔 '{title}' has left your world... goodbye old friend."}
