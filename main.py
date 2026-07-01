@@ -16,6 +16,16 @@ def init_db():
             notes TEXT
         )
     """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reading_paths (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            author TEXT,
+            book_title TEXT,
+            order_num INTEGER,
+            why_start_here TEXT
+        )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -124,3 +134,42 @@ def delete_book(book_id: int):
     conn.close()
     title = book[0] if book else "That book"
     return {"message": f"💔 '{title}' has left your world... goodbye old friend."}
+
+class ReadingPath(BaseModel):
+    author: str
+    book_title: str
+    order_num: int
+    why_start_here: str
+
+@app.post("/reading-path")
+def add_reading_path(path: ReadingPath):
+    conn = sqlite3.connect("books.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO reading_paths (author, book_title, order_num, why_start_here) VALUES (?, ?, ?, ?)",
+        (path.author, path.book_title, path.order_num, path.why_start_here)
+    )
+    conn.commit()
+    conn.close()
+    return {"message": f"📖 Added '{path.book_title}' to {path.author}'s reading path!"}
+
+@app.get("/author/{author_name}/where-to-start")
+def where_to_start(author_name: str):
+    conn = sqlite3.connect("books.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT book_title, order_num, why_start_here FROM reading_paths WHERE author=? ORDER BY order_num",
+        (author_name,)
+    )
+    path = cursor.fetchall()
+    conn.close()
+    
+    if not path:
+        return {"message": f"No reading path found for {author_name} yet. Check back soon!"}
+    
+    return {
+        "author": author_name,
+        "reading_path": [
+            {"order": p[1], "book": p[0], "why": p[2]} for p in path
+        ]
+    }
