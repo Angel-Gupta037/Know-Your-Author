@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import requests
 import sqlite3
 from pydantic import BaseModel
@@ -32,6 +34,12 @@ def init_db():
 init_db()
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/home")
+def home_page():
+    return FileResponse("static/index.html")
+    
 
 @app.get("/")
 def home():
