@@ -4,6 +4,7 @@ from fastapi.responses import FileResponse
 import requests
 import sqlite3
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 def init_db():
     conn = sqlite3.connect("books.db")
@@ -34,12 +35,21 @@ def init_db():
 init_db()
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/home")
 def home_page():
     return FileResponse("static/index.html")
     
+@app.get("/my-list")
+def my_list_page():
+    return FileResponse("static/my-list.html")
 
 @app.get("/")
 def home():
@@ -113,36 +123,6 @@ def get_books():
     books = cursor.fetchall()
     conn.close()
     return {"books": books}
-@app.put("/books/{book_id}")
-def update_book(book_id: int, status: str, rating: int = None, notes: str = None):
-    conn = sqlite3.connect("books.db")
-    cursor = conn.cursor()
-    cursor.execute(
-        "UPDATE books SET status=?, rating=?, notes=? WHERE id=?",
-        (status, rating, notes, book_id)
-    )
-    conn.commit()
-    conn.close()
-
-    title = book[0] if book else "This book"
-    
-    if status == "reading":
-        message = f"📖 '{title}' and you are now on an adventure together!"
-    elif status == "finished":
-        message = f"🎉 '{title}' has been conquered! How did it feel?"
-    else:
-        message = f"🔖 '{title}' is patiently waiting for you..."
-
-@app.delete("/books/{book_id}")
-def delete_book(book_id: int):
-    conn = sqlite3.connect("books.db")
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM books WHERE id=?", (book_id,))
-    conn.commit()
-    conn.close()
-    title = book[0] if book else "That book"
-    return {"message": f"💔 '{title}' has left your world... goodbye old friend."}
-
 class ReadingPath(BaseModel):
     author: str
     book_title: str
@@ -181,3 +161,39 @@ def where_to_start(author_name: str):
             {"order": p[1], "book": p[0], "why": p[2]} for p in path
         ]
     }
+@app.put("/books/{book_id}")
+def update_book(book_id: int, status: str, rating: int = None, notes: str = None):
+    conn = sqlite3.connect("books.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT title FROM books WHERE id=?", (book_id,))
+    book = cursor.fetchone()
+    cursor.execute(
+        "UPDATE books SET status=?, rating=?, notes=? WHERE id=?",
+        (status, rating, notes, book_id)
+    )
+    conn.commit()
+    conn.close()
+
+    title = book[0] if book else "This book"
+
+    if status == "reading":
+        message = f"📖 '{title}' and you are now on an adventure together!"
+    elif status == "finished":
+        message = f"🎉 '{title}' has been conquered! How did it feel?"
+    else:
+        message = f"🔖 '{title}' is patiently waiting for you..."
+
+    return {"message": message}
+
+@app.delete("/books/{book_id}")
+def delete_book(book_id: int):
+    conn = sqlite3.connect("books.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT title FROM books WHERE id=?", (book_id,))
+    book = cursor.fetchone()
+    cursor.execute("DELETE FROM books WHERE id=?", (book_id,))
+    conn.commit()
+    conn.close()
+
+    title = book[0] if book else "That book"
+    return {"message": f"💔 '{title}' has left your world... goodbye old friend."}

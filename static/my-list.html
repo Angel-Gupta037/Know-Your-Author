@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My List — Know Your Author</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sage: #c3c88c;
+            --dark-purple: #30253e;
+            --russian-green: #638872;
+            --pewter-blue: #8089b1;
+            --cambridge-blue: #94b8a3;
+            --cream: #f5f2ea;
+            --off-white: #faf8f3;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--off-white);
+            color: var(--dark-purple);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 60px;
+            background: var(--off-white);
+            border-bottom: 1px solid rgba(48,37,62,0.08);
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark-purple);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-purple);
+            font-size: 0.85rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active { opacity: 1; font-weight: 500; }
+
+        .nav-pill {
+            background: var(--dark-purple);
+            color: var(--cream);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .page-header {
+            padding: 60px 60px 32px;
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--dark-purple);
+            line-height: 1.05;
+        }
+
+        .page-header h1 em {
+            font-style: italic;
+            color: var(--russian-green);
+        }
+
+        .page-header p {
+            margin-top: 12px;
+            color: var(--dark-purple);
+            opacity: 0.5;
+            font-size: 0.95rem;
+        }
+
+        /* FILTER TABS */
+        .filter-tabs {
+            padding: 0 60px 32px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1.5px solid rgba(48,37,62,0.2);
+            background: transparent;
+            color: var(--dark-purple);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.83rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab.active, .tab:hover {
+            background: var(--dark-purple);
+            color: var(--cream);
+            border-color: var(--dark-purple);
+        }
+
+        /* BOOKS LIST */
+        .books-container {
+            padding: 0 60px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .book-row {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(48,37,62,0.08);
+            display: grid;
+            grid-template-columns: 80px 1fr auto;
+            gap: 20px;
+            align-items: start;
+            transition: box-shadow 0.2s;
+        }
+
+        .book-row:hover {
+            box-shadow: 0 4px 20px rgba(48,37,62,0.08);
+        }
+
+        .book-row.bookmarked {
+            border-left: 3px solid var(--sage);
+        }
+
+        /* COVER */
+        .book-cover-small {
+            width: 80px;
+            height: 110px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.7rem;
+            font-style: italic;
+            text-align: center;
+            padding: 8px;
+            color: var(--dark-purple);
+            flex-shrink: 0;
+        }
+
+        .book-cover-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .cover-0 { background: linear-gradient(135deg, #c3c88c, #94b8a3); }
+        .cover-1 { background: linear-gradient(135deg, #8089b1, #638872); }
+        .cover-2 { background: linear-gradient(135deg, #94b8a3, #c3c88c); }
+        .cover-3 { background: linear-gradient(135deg, #e8c99a, #8089b1); }
+        .cover-4 { background: linear-gradient(135deg, #638872, #30253e); color: #f5f2ea !important; }
+
+        /* BOOK INFO */
+        .book-info h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--dark-purple);
+            margin-bottom: 4px;
+        }
+
+        .book-info .author-name {
+            font-size: 0.85rem;
+            color: var(--dark-purple);
+            opacity: 0.5;
+            margin-bottom: 14px;
+        }
+
+        /* STATUS */
+        .status-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .status-btn {
+            padding: 5px 14px;
+            border-radius: 12px;
+            border: 1.5px solid rgba(48,37,62,0.15);
+            background: transparent;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--dark-purple);
+        }
+
+        .status-btn:hover { border-color: var(--dark-purple); }
+        .status-btn.active-want { background: var(--pewter-blue); color: white; border-color: var(--pewter-blue); }
+        .status-btn.active-reading { background: var(--russian-green); color: white; border-color: var(--russian-green); }
+        .status-btn.active-finished { background: var(--dark-purple); color: var(--cream); border-color: var(--dark-purple); }
+
+        /* STARS */
+        .stars {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 14px;
+        }
+
+        .star {
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.15s;
+        }
+
+        .star.filled { color: var(--sage); }
+        .star:hover { color: var(--sage); }
+
+        /* NOTES */
+        .notes-area {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid rgba(48,37,62,0.12);
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.83rem;
+            color: var(--dark-purple);
+            background: var(--off-white);
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+            min-height: 60px;
+        }
+
+        .notes-area:focus { border-color: var(--russian-green); }
+        .notes-area::placeholder { color: #bbb; }
+
+        .save-note-btn {
+            margin-top: 8px;
+            padding: 7px 16px;
+            background: var(--russian-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .save-note-btn:hover { background: var(--dark-purple); }
+
+        /* ACTIONS */
+        .book-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .action-btn {
+            padding: 7px 14px;
+            border-radius: 8px;
+            border: 1.5px solid rgba(48,37,62,0.15);
+            background: transparent;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--dark-purple);
+            white-space: nowrap;
+        }
+
+        .action-btn:hover { background: var(--dark-purple); color: var(--cream); border-color: var(--dark-purple); }
+
+        .action-btn.bookmark-active {
+            background: var(--sage);
+            border-color: var(--sage);
+            color: var(--dark-purple);
+        }
+
+        .delete-btn {
+            border-color: rgba(200,80,80,0.3);
+            color: #c85050;
+        }
+
+        .delete-btn:hover {
+            background: #c85050;
+            color: white;
+            border-color: #c85050;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--dark-purple);
+        }
+
+        .empty-state h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-style: italic;
+            opacity: 0.4;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            opacity: 0.4;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .go-home-btn {
+            padding: 12px 28px;
+            background: var(--dark-purple);
+            color: var(--cream);
+            border: none;
+            border-radius: 50px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--dark-purple);
+            color: var(--cream);
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 768px) {
+            nav, .page-header, .filter-tabs, .books-container { padding-left: 24px; padding-right: 24px; }
+            .book-row { grid-template-columns: 60px 1fr; }
+            .book-actions { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; grid-column: 1 / -1; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/home" class="nav-logo">KYA</a>
+    <ul class="nav-links">
+        <li><a href="/home">Discover</a></li>
+        <li><a href="/my-list" class="active">My List</a></li>
+        <li><a href="#">About</a></li>
+    </ul>
+    <div class="nav-pill">2026</div>
+</nav>
+
+<div class="page-header">
+    <h1>My <em>Reading</em> List.</h1>
+    <p id="list-count">Loading your books...</p>
+</div>
+
+<div class="filter-tabs">
+    <button class="tab active" onclick="filterBooks('all', this)">All</button>
+    <button class="tab" onclick="filterBooks('want to read', this)">Want to Read</button>
+    <button class="tab" onclick="filterBooks('reading', this)">Currently Reading</button>
+    <button class="tab" onclick="filterBooks('finished', this)">Finished</button>
+</div>
+
+<div class="books-container" id="booksContainer"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://localhost:8000';
+let allBooks = [];
+let currentFilter = 'all';
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function getCoverUrl(title) {
+    return `https://covers.openlibrary.org/b/title/${encodeURIComponent(title)}-M.jpg`;
+}
+
+async function loadBooks() {
+    try {
+        const res = await fetch(`${API}/books`);
+        const data = await res.json();
+        allBooks = data.books.map((b, i) => ({
+            id: b[0], title: b[1], author: b[2],
+            status: b[3], rating: b[4], notes: b[5],
+            bookmarked: false, index: i
+        }));
+        renderBooks();
+    } catch(e) {
+        document.getElementById('booksContainer').innerHTML = 
+            '<div style="text-align:center;padding:60px;opacity:0.4;font-style:italic;">Could not load books. Is the server running?</div>';
+    }
+}
+
+function filterBooks(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    renderBooks();
+}
+
+function renderBooks() {
+    const container = document.getElementById('booksContainer');
+    let books = currentFilter === 'all' 
+        ? allBooks 
+        : allBooks.filter(b => b.status === currentFilter);
+
+    // bookmarked first
+    books = [...books.filter(b => b.bookmarked), ...books.filter(b => !b.bookmarked)];
+
+    const count = document.getElementById('list-count');
+    count.textContent = `${books.length} book${books.length !== 1 ? 's' : ''} in your list`;
+
+    if (books.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3>Nothing here yet.</h3>
+                <p>Search for an author and start adding books to your list.</p>
+                <a href="/home" class="go-home-btn">Discover Authors →</a>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = books.map((book, i) => {
+        const coverUrl = getCoverUrl(book.title);
+        const statusClass = book.status === 'want to read' ? 'active-want' 
+                          : book.status === 'reading' ? 'active-reading' 
+                          : book.status === 'finished' ? 'active-finished' : '';
+
+        const stars = [1,2,3,4,5].map(n => `
+            <span class="star ${book.rating >= n ? 'filled' : ''}" 
+                  onclick="updateRating(${book.id}, ${n}, this.parentElement)">★</span>
+        `).join('');
+
+        return `
+        <div class="book-row ${book.bookmarked ? 'bookmarked' : ''}" id="row-${book.id}">
+            <div class="book-cover-small cover-${i % 5}">
+                <img src="${coverUrl}" onerror="this.style.display='none'" alt="${book.title}" />
+            </div>
+            <div class="book-info">
+                <h3>${book.title}</h3>
+                <p class="author-name">by ${book.author}</p>
+                <div class="status-row">
+                    <button class="status-btn ${book.status === 'want to read' ? 'active-want' : ''}" 
+                            onclick="updateStatus(${book.id}, 'want to read', this)">Want to Read</button>
+                    <button class="status-btn ${book.status === 'reading' ? 'active-reading' : ''}" 
+                            onclick="updateStatus(${book.id}, 'reading', this)">Reading</button>
+                    <button class="status-btn ${book.status === 'finished' ? 'active-finished' : ''}" 
+                            onclick="updateStatus(${book.id}, 'finished', this)">Finished</button>
+                </div>
+                <div class="stars">${stars}</div>
+                <textarea class="notes-area" id="notes-${book.id}" 
+                          placeholder="Write your thoughts on this book...">${book.notes || ''}</textarea>
+                <button class="save-note-btn" onclick="saveNote(${book.id})">Save Note</button>
+            </div>
+            <div class="book-actions">
+                <button class="action-btn ${book.bookmarked ? 'bookmark-active' : ''}" 
+                        onclick="toggleBookmark(${book.id}, this)">
+                    ${book.bookmarked ? '🔖 Bookmarked' : '🔖 Bookmark'}
+                </button>
+                <button class="action-btn delete-btn" onclick="deleteBook(${book.id})">Remove</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+async function updateStatus(id, status, btn) {
+    try {
+        const notes = document.getElementById(`notes-${id}`)?.value || '';
+        const book = allBooks.find(b => b.id === id);
+        const rating = book?.rating || 0;
+
+        const res = await fetch(`${API}/books/${id}?status=${encodeURIComponent(status)}&rating=${rating || 0}&notes=${encodeURIComponent(notes)}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+
+        const b = allBooks.find(b => b.id === id);
+        if (b) b.status = status;
+
+        // update button styles
+        const row = document.getElementById(`row-${id}`);
+        row.querySelectorAll('.status-btn').forEach(s => {
+            s.classList.remove('active-want', 'active-reading', 'active-finished');
+        });
+        if (status === 'want to read') btn.classList.add('active-want');
+        else if (status === 'reading') btn.classList.add('active-reading');
+        else if (status === 'finished') btn.classList.add('active-finished');
+
+        showToast(data.message);
+    } catch(e) {
+        showToast('Could not update status.');
+    }
+}
+
+async function updateRating(id, rating, starsContainer) {
+    try {
+        const notes = document.getElementById(`notes-${id}`)?.value || '';
+        const book = allBooks.find(b => b.id === id);
+        const status = book?.status || 'want to read';
+
+        await fetch(`${API}/books/${id}?status=${encodeURIComponent(status)}&rating=${rating}&notes=${encodeURIComponent(notes)}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const b = allBooks.find(b => b.id === id);
+        if (b) b.rating = rating;
+
+        starsContainer.querySelectorAll('.star').forEach((s, i) => {
+            s.classList.toggle('filled', i < rating);
+        });
+
+        showToast(`Rated ${rating} star${rating !== 1 ? 's' : ''}! ⭐`);
+    } catch(e) {
+        showToast('Could not update rating.');
+    }
+}
+
+async function saveNote(id) {
+    try {
+        const notes = document.getElementById(`notes-${id}`)?.value || '';
+        const book = allBooks.find(b => b.id === id);
+        const status = book?.status || 'want to read';
+        const rating = book?.rating || 0;
+
+        await fetch(`${API}/books/${id}?status=${encodeURIComponent(status)}&rating=${rating || 0}&notes=${encodeURIComponent(notes)}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const b = allBooks.find(b => b.id === id);
+        if (b) b.notes = notes;
+
+        showToast('Note saved! 📝');
+    } catch(e) {
+        showToast('Could not save note.');
+    }
+}
+
+async function deleteBook(id) {
+    try {
+        const res = await fetch(`${API}/books/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        allBooks = allBooks.filter(b => b.id !== id);
+        renderBooks();
+        showToast(data.message);
+    } catch(e) {
+        showToast('Could not remove book.');
+    }
+}
+
+function toggleBookmark(id, btn) {
+    const book = allBooks.find(b => b.id === id);
+    if (!book) return;
+    book.bookmarked = !book.bookmarked;
+    btn.classList.toggle('bookmark-active', book.bookmarked);
+    btn.textContent = book.bookmarked ? '🔖 Bookmarked' : '🔖 Bookmark';
+    const row = document.getElementById(`row-${id}`);
+    row.classList.toggle('bookmarked', book.bookmarked);
+    renderBooks();
+    showToast(book.bookmarked ? 'Bookmarked! 🔖' : 'Bookmark removed.');
+}
+
+loadBooks();
+</script>
+
+</body>
+</html>
