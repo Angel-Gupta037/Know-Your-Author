@@ -51,6 +51,10 @@ def home_page():
 def my_list_page():
     return FileResponse("static/my-list.html")
 
+@app.get("/about")
+def about_page():
+    return FileResponse("static/about.html")
+
 @app.get("/")
 def home():
     return {"message": "Welcome to Know Your Author"}
@@ -72,7 +76,7 @@ def get_author_by_name(author_name: str):
     }
 @app.get("/author/{author_name}/books")
 def get_author_books(author_name: str):
-    url = f"https://openlibrary.org/search.json?author={author_name}&limit=5"
+    url = f"https://openlibrary.org/search.json?author={author_name}&limit=20"
     response = requests.get(url)
     data = response.json()
     

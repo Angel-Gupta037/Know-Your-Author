@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — Know Your Author</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sage: #c3c88c;
+            --dark-purple: #30253e;
+            --russian-green: #638872;
+            --pewter-blue: #8089b1;
+            --cambridge-blue: #94b8a3;
+            --cream: #f5f2ea;
+            --off-white: #faf8f3;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--off-white);
+            color: var(--dark-purple);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 60px;
+            border-bottom: 1px solid rgba(48,37,62,0.08);
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark-purple);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-purple);
+            font-size: 0.85rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active { opacity: 1; font-weight: 500; }
+
+        .nav-pill {
+            background: var(--dark-purple);
+            color: var(--cream);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* HERO */
+        .about-hero {
+            padding: 80px 60px 60px;
+            max-width: 800px;
+        }
+
+        .about-hero .tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--russian-green);
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .about-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.8rem, 5vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.05;
+            color: var(--dark-purple);
+            margin-bottom: 28px;
+        }
+
+        .about-hero h1 em {
+            font-style: italic;
+            color: var(--russian-green);
+        }
+
+        .about-hero .tagline {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-style: italic;
+            color: var(--dark-purple);
+            opacity: 0.6;
+            line-height: 1.6;
+        }
+
+        /* DIVIDER */
+        .divider {
+            margin: 0 60px;
+            height: 1px;
+            background: rgba(48,37,62,0.1);
+        }
+
+        /* CONTENT */
+        .about-content {
+            padding: 60px 60px 40px;
+            max-width: 720px;
+        }
+
+        .about-content p {
+            font-size: 1.05rem;
+            line-height: 1.85;
+            color: var(--dark-purple);
+            opacity: 0.8;
+            margin-bottom: 28px;
+        }
+
+        .about-content p strong {
+            opacity: 1;
+            font-weight: 600;
+        }
+
+        /* PULL QUOTE */
+        .pull-quote {
+            margin: 40px 60px;
+            padding: 36px 48px;
+            background: var(--dark-purple);
+            border-radius: 16px;
+            max-width: 720px;
+        }
+
+        .pull-quote p {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-style: italic;
+            color: var(--cream);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .pull-quote span {
+            font-size: 0.82rem;
+            color: var(--sage);
+            letter-spacing: 1px;
+        }
+
+        /* SIGN OFF */
+        .sign-off {
+            padding: 20px 60px 80px;
+            max-width: 720px;
+        }
+
+        .sign-off p {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--dark-purple);
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+
+        .sign-off .signature {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-style: italic;
+            color: var(--russian-green);
+            opacity: 1;
+        }
+
+        /* CTA */
+        .cta-section {
+            margin: 0 60px 80px;
+            padding: 40px 48px;
+            background: var(--sage);
+            border-radius: 16px;
+            max-width: 720px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .cta-section h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--dark-purple);
+            font-weight: 700;
+        }
+
+        .cta-section p {
+            font-size: 0.88rem;
+            color: var(--dark-purple);
+            opacity: 0.7;
+            margin-top: 6px;
+        }
+
+        .cta-btn {
+            padding: 14px 28px;
+            background: var(--dark-purple);
+            color: var(--cream);
+            border: none;
+            border-radius: 50px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .cta-btn:hover { background: var(--russian-green); }
+
+        @media (max-width: 768px) {
+            nav, .about-hero, .about-content, .sign-off { padding-left: 24px; padding-right: 24px; }
+            .divider, .pull-quote, .cta-section { margin-left: 24px; margin-right: 24px; }
+            .cta-section { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/home" class="nav-logo">KYA</a>
+    <ul class="nav-links">
+        <li><a href="/home">Discover</a></li>
+        <li><a href="/my-list">My List</a></li>
+        <li><a href="/about" class="active">About</a></li>
+    </ul>
+    <div class="nav-pill">2026</div>
+</nav>
+
+<div class="about-hero">
+    <p class="tag">The Story</p>
+    <h1>Every great author<br>has a <em>best first book.</em></h1>
+    <p class="tagline">Most people never find it.</p>
+</div>
+
+<div class="divider"></div>
+
+<div class="about-content">
+    <p>
+        I built Know Your Author because I kept running into the same problem — 
+        I'd hear about an author, want to read them, search online, and get hit 
+        with a list of their most famous books. But <strong>famous doesn't mean first.</strong>
+    </p>
+    <p>
+        Dostoevsky's most celebrated work isn't where you should start. 
+        Neither is Kafka's. Neither is Orwell's. The internet is full of 
+        "best books" lists. Nobody tells you where to <em>actually begin.</em>
+    </p>
+    <p>
+        There's something quietly frustrating about wanting to enter an author's 
+        world and not knowing which door to knock on. You pick the wrong book, 
+        it's too dense, too abstract, too heavy for a first encounter — and you 
+        give up on an author you might have loved.
+    </p>
+</div>
+
+<div class="pull-quote">
+    <p>"Know Your Author is my answer to that. A simple, honest guide to entering an author's world — starting from the right door."</p>
+    <span>— The idea behind KYA</span>
+</div>
+
+<div class="about-content">
+    <p>
+        Every reading path here is <strong>personally curated.</strong> Not algorithmic. 
+        Not a bestseller list. Just a genuine recommendation of where to begin, 
+        and why — written for someone who has never opened that author's work before.
+    </p>
+    <p>
+        This is not Goodreads. This is not a review site. This is just one reader 
+        telling another: <em>start here, trust me.</em>
+    </p>
+</div>
+
+<div class="sign-off">
+    <p>
+        Know Your Author started as a small project — a way to solve a problem 
+        I kept having. If it helps even one person discover an author they end up 
+        loving, it's done its job.
+    </p>
+    <p><em>Start somewhere. Start right.</em></p>
+    <p class="signature">— Angel</p>
+</div>
+
+<div class="cta-section">
+    <div>
+        <h3>Ready to begin?</h3>
+        <p>Search an author and find your perfect first book.</p>
+    </div>
+    <a href="/home" class="cta-btn">Discover Authors →</a>
+</div>
+
+</body>
+</html>
