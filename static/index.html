@@ -648,14 +648,15 @@ async function searchAuthor() {
 
     try {
         const [authorRes, pathRes, booksRes] = await Promise.all([
-            fetch(`${API}/author/${encodeURIComponent(name)}`),
-            fetch(`${API}/author/${encodeURIComponent(name)}/where-to-start`),
-            fetch(`${API}/author/${encodeURIComponent(name)}/books`)
-        ]);
+        fetch(`${API}/author/${encodeURIComponent(name)}`),
+        fetch(`${API}/author/${encodeURIComponent(name)}/where-to-start`),
+        fetch(`${API}/author/${encodeURIComponent(name)}/books`).catch(() => null)
+    ]);
+
+        const booksData = booksRes ? await booksRes.json().catch(() => ({ books: [] })) : { books: [] };
 
         const author = await authorRes.json();
         const path = await pathRes.json();
-        const booksData = await booksRes.json();
 
         const authorName = author.name || name;
         const initial = authorName.charAt(0).toUpperCase();
